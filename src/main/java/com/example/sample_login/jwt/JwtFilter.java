@@ -1,0 +1,63 @@
+package com.example.sample_login.jwt;
+
+import com.example.sample_login.service.member.service.AuthDetailService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+
+@Component
+public class JwtFilter extends OncePerRequestFilter {
+
+    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthDetailService detailService;
+
+
+    public JwtFilter( @Autowired JwtTokenProvider jwtTokenProvider,@Autowired AuthDetailService detailService) {
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.detailService = detailService;
+    }
+    private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
+    @Override
+    protected void doFilterInternal(HttpServletRequest request
+            , HttpServletResponse response
+            , FilterChain filterChain)
+            throws ServletException, IOException
+    {
+        try {
+            String jwt = parseJwt(request);
+            if(jwt != null && jwtTokenProvider.validateJwtToken(jwt)){
+                String userName = jwtTokenProvider.getUserNameFromJwtToken(jwt);
+                UsernamePasswordAuthenticationToken authentication
+                        = (UsernamePasswordAuthenticationToken) jwtTokenProvider.getAuthentication(jwt);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        }catch (Exception e){
+            logger.error("no user", e);
+        }
+        filterChain.doFilter(request,response);
+
+
+    }
+
+    private String parseJwt(HttpServletRequest request) {
+        String headerAuth = request.getHeader("Authorization");
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            return headerAuth.substring(7, headerAuth.length());
+        }
+        return null;
+    }
+}

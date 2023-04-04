@@ -37,7 +37,6 @@ public class MemberController {
 
     @PostMapping("/join")
     public MemberDTO join(@RequestBody MemberDTO dto){
-        System.out.println(dto.getIdUser());
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         dto.setPwUser(passwordEncoder.encode(dto.getPwUser()));
         memberService.save(dto);

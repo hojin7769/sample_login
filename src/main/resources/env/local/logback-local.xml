@@ -1,0 +1,160 @@
+<included>
+
+    <!-- LOG 홈 설정 -->
+    <property name="LOG_DIR" value="./log"/>
+
+    <property name="CHARSET" value="UTF-8" />
+
+    <!-- 표준 LOG 패턴 -->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} [%file:%line] -%msg%n"/>
+
+    <!-- 표준 LOG 패턴 -->
+    <property name="API_LOG_PATTERN" value="[%-5level] : #%X{requestUID} #%X{requestUserAgent} #START:%X{requestStartTime} #%X{methodName} #%X{methodArgs} #%X{methodReturn}%n"/>
+    <!-- 표준 SQL 로그 패턴 -->
+    <property name="SQL_LOG_PATTERN" value="[%-5level] : #%X{requestUID} #%X{requestUserAgent} %msg%n"/>
+
+    <timestamp key="FILE_NAME_BY_SECOND" datePattern="yyyyMMdd 'T' HHmmss " />
+
+    <!-- 로그 꾸미는 용도 -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+    <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
+
+
+    <!-- APPENDER : 로그를 출력 할 위치, 출력 형식 등을 설정 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <withJansi>true</withJansi>
+        <encoder>
+            <charset>${CHARSET}</charset>
+            <pattern>%clr([%-5level]){cyan} : %clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){grey} %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- APPENDER : 로그를 출력 할 위치, 출력 형식 등을 설정 -->
+    <appender name="API_STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <withJansi>true</withJansi>
+        <encoder>
+            <charset>${CHARSET}</charset>
+            <pattern>${API_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- APPENDER : 로그를 출력 할 위치, 출력 형식 등을 설정 -->
+    <appender name="SQL_STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <withJansi>true</withJansi>
+        <encoder>
+            <charset>${CHARSET}</charset>
+            <pattern>${SQL_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Request Log -->
+    <appender name="REQUEST_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/api/api.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>api.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <maxHistory>3</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+
+        </rollingPolicy>
+        <encoder>
+            <charset>${CHARSET}</charset>
+            <pattern>${API_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 일반적인 FILE APPENDER -->
+    <appender name="DOMAIN_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/domain/domain.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>domain.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <maxHistory>3</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+
+        </rollingPolicy>
+
+        <encoder>
+            <charset>${CHARSET}</charset>
+            <pattern>[%-5level] [%d{HH:mm:ss.SSS}] at %C %X{requestUUID} : param[#%X{parameter}] %n return[#%X{return}]%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="SQL_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/sql/sql.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>sql.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <maxHistory>3</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <charset>${CHARSET}</charset>
+            <pattern>${SQL_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ERROR LOG -->
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <!-- root에서 사용하기 위해 filter를 추가 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <file>${LOG_DIR}/error/error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>error.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <maxHistory>3</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <charset>${CHARSET}</charset>
+            <pattern>%d{HH:mm:ss.SSS} [%thread]  %-5level %logger{35} %X{requestUUID}:%X{requestURL} [%file:%line] -%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 커스텀 로그 설정 -->
+    <logger name="domainLog" level="info" additivity="false">
+        <appender-ref ref="DOMAIN_LOG" />
+    </logger>
+
+    <!-- ERROR LOG-->
+    <logger name="ERROR" level="ERROR" additivity="false">
+        <appender-ref ref="ERROR" />
+    </logger>
+
+    <!-- Root : 모든 Error 로그를 수집 -->
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ERROR" />
+    </root>
+
+    <!-- WEB LOG -->
+    <logger name="API_LOG" level="TRACE" additivity="false">
+        <appender-ref ref="API_STDOUT" />
+        <appender-ref ref="REQUEST_LOG" />
+    </logger>
+
+    <!-- SQL LOG : hibernate -->
+    <logger name="org.hibernate.SQL" level="TRACE">
+        <appender-ref ref="SQL_STDOUT"/>
+        <appender-ref ref="SQL_LOG"/>
+    </logger>
+
+</included>

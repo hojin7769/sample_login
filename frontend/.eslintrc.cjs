@@ -12,6 +12,9 @@ module.exports = {
     ecmaVersion: 'latest'
   },
   rules: {
+    "vue/no-unused-vars": "off",
+    "no-unused-vars": "off",
+    "vue/no-mutating-props":"off",
     'prettier/prettier': [
       'error',
       {
@@ -19,5 +22,5 @@ module.exports = {
         endOfLine: 'auto',
       },
     ],
-  },
+},
 }

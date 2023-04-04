@@ -26,7 +26,8 @@ export const useAuthStore = defineStore({
         .then((res) => {
           console.log(res)
           // const user = res.data.result[0];
-          this.setUser(res.data)
+          const user = res.data.result[0]
+          this.setUser(user)
 
           // onSuccess(res);
         })

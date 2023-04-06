@@ -12,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 
@@ -37,12 +38,16 @@ public class JwtTokenProvider {
 
     public String createAccressToken(String userId){
         Long tokenInvalidTime = accessExpiration * 60 * 1000L;
-        return createToken(userId,tokenInvalidTime);
+        String accessToken = createToken(userId,tokenInvalidTime);
+        redisUtil.setValues(accessToken, userId, Duration.ofMillis(tokenInvalidTime));
+        return accessToken;
     }
 
     public String createRefresh(String userId){
         Long tokenInvalidTime = refreshExpiration * 60 * 1000L;
-        return createToken(userId, tokenInvalidTime);
+        String refreshToken = createToken(userId,tokenInvalidTime);
+        redisUtil.setValues(refreshToken, userId, Duration.ofMillis(tokenInvalidTime));
+        return refreshToken;
     }
 
     public String createToken(String userId, Long tokenInvalidTime){
@@ -74,6 +79,10 @@ public class JwtTokenProvider {
         // TODO Auto-generated method stub
         String redisRT = redisUtil.getValues(refreshToken);
         return redisRT == null ? false : true;
+    }
+
+    public String getToken(String key){
+        return redisUtil.getValues(key);
     }
 
     public void deleteRefreshToken(String refreshToken) {

@@ -9,6 +9,7 @@
                 <v-text-field
                   variant="underlined"
                   v-model="user.id"
+                  :rules="[(v) => !!v || 'Error: Please enter ID']"
                   label="User Name"
                 ></v-text-field>
 
@@ -16,6 +17,7 @@
                   variant="underlined"
                   v-model="user.pw"
                   label="password"
+                  :rules="[(v) => !!v || 'Error: Please enter PW']"
                 ></v-text-field>
                 <a href="#" class="text-body-2 font-weight-regular">Forgot Password?</a>
 
@@ -63,9 +65,13 @@ function login() {
   }
   auth.login(data, null, null)
 }
-
 function join() {
   dialogData.value = true
+}
+
+const rules = (value) => {
+  if (value) return true
+  return 'no value'
 }
 </script>
 <style>

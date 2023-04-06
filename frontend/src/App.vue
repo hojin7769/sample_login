@@ -3,19 +3,37 @@ import { RouterView, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/Auth'
 import Login from '@/views/Login.vue'
 import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue'
 
 const auth = useAuthStore()
+const drawer = ref()
+
+if (auth.user != null) {
+  auth.check(() => {
+    // console.log("check");
+  })
+} else {
+  auth.isLogin = false
+}
 </script>
 
 <template>
-  <div class="d-flex align-center flex-column" style="height: 100vh">
-    <div class="router-page" v-if="!auth.isLogin">
-      <Login></Login>
-    </div>
-    <div class="router-page" v-if="auth.isLogin">
+  <v-app id="inspire">
+    <v-navigation-drawer v-model="drawer">
+      <!--  -->
+    </v-navigation-drawer>
+
+    <v-app-bar>
+      <v-app-bar-nav-icon @click="drawer = !drawer"> </v-app-bar-nav-icon>
+
+      <v-toolbar-title>Application</v-toolbar-title>
+    </v-app-bar>
+
+    <v-main>
+      <!--  -->
       <RouterView />
-    </div>
-  </div>
+    </v-main>
+  </v-app>
 </template>
 
 <style scoped>

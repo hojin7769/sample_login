@@ -13,8 +13,8 @@ logging:
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/test_db
-    username: hj
-    password: 1234
+    username: ENC(dkWWfHxCZsIDWohYk6SSEQ==)
+    password: ENC(s2YLJ562eYxAI8iKegk+dw==)
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     defer-datasource-initialization: true

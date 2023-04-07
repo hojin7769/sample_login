@@ -10,6 +10,7 @@ const setup = () => {
       const token = auth.user.accessToken
       try {
         config.headers['Authorization'] = `Bearer ${token}`
+        config.headers['UserId'] = auth.user.idUser
         return config
       } catch (err) {
         console.error('[_axios.interceptors.request] config : ' + err)

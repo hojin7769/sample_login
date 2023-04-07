@@ -1,9 +1,11 @@
 package com.example.sample_login.config.filter;
 
+import com.example.sample_login.jwt.JwtTokenProvider;
 import com.example.sample_login.util.MDCUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.Enumeration;
@@ -27,6 +29,7 @@ public class LogFilter implements Filter {
         try {
             MDCUtil.put( "requestUID" , RandomStringUtils.randomAscii( 8 ) );
             MDCUtil.put( "requestUserAgent" , req.getHeaderNames().toString() );
+            MDCUtil.put("userID",getHeaderID(req));
 
             chain.doFilter( request, response );
         }
@@ -49,5 +52,15 @@ public class LogFilter implements Filter {
     private String getHeader( HttpServletRequest req ) {
 
         return req.getHeader( "X-Forwarded-For" );
+    }
+
+    private String getHeaderID(HttpServletRequest req){
+        String headerAuth = req.getHeader("UserId");
+
+        if(StringUtils.hasText(headerAuth)){
+            return headerAuth;
+        }else {
+            return "";
+        }
     }
 }

@@ -9,7 +9,7 @@
     <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} [%file:%line] -%msg%n"/>
 
     <!-- 표준 LOG 패턴 -->
-    <property name="API_LOG_PATTERN" value="[%-5level] : #%X{requestUID} #%X{requestUserAgent} #START:%X{requestStartTime} #%X{methodName} #%X{methodArgs} #%X{methodReturn}%n"/>
+    <property name="API_LOG_PATTERN" value="[%-5level] : #%X{requestUID} - %X{userID} #%X{requestUserAgent} #START:%X{requestStartTime} #%X{methodName} #%X{methodArgs} #%X{methodReturn}%n"/>
     <!-- 표준 SQL 로그 패턴 -->
     <property name="SQL_LOG_PATTERN" value="[%-5level] : #%X{requestUID} #%X{requestUserAgent} %msg%n"/>
 
